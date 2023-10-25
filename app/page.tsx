@@ -10,8 +10,14 @@ import {
   toggleTaskCompletion,
 } from "@/utilities/tasks";
 import ActiveTasks from "@/components/ActiveTasks";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export default async function Home() {
+  const session = await getServerSession(authOptions);
+
+  console.log(session);
+
   const activeTasks = await db
     .select()
     .from(tasks)
