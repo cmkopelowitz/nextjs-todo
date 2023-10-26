@@ -4,9 +4,9 @@ import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function createTask(task: string) {
+export async function createTask(title: string, userId: string) {
   try {
-    await db.insert(tasks).values({ title: task });
+    await db.insert(tasks).values({ title, userId });
     revalidatePath("/");
   } catch (error) {
     console.log(error);

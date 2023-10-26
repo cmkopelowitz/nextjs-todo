@@ -1,18 +1,14 @@
 "use client";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { createTask } from "@/utilities/tasks";
+import { useSession } from "next-auth/react";
 
 type Inputs = {
   title: string;
 };
 
-export default function TaskForm({
-  createTask,
-  className,
-}: {
-  createTask(title: string): void;
-  className: string;
-}) {
+export default function TaskForm({ className }: { className: string }) {
   const {
     register,
     handleSubmit,
@@ -20,8 +16,10 @@ export default function TaskForm({
     reset,
   } = useForm<Inputs>();
 
+  const { data: session, status } = useSession();
+
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    createTask(data.title);
+    createTask(data.title, session.user.id);
     reset();
   };
 

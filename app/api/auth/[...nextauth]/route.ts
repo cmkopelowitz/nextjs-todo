@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, SessionOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 // import EmailProvider from "next-auth/providers/email";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
@@ -23,6 +23,22 @@ export const authOptions: NextAuthOptions = {
     //   from: process.env.EMAIL_FROM,
     // }),
   ],
+  callbacks: {
+    jwt: async ({ user, token }) => {
+      if (user) {
+        token.uid = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.id = token.uid;
+
+      return session;
+    },
+  },
+  session: {
+    strategy: "jwt",
+  },
 };
 
 const handler = NextAuth(authOptions);

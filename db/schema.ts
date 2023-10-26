@@ -106,26 +106,37 @@ export const verificationTokens = pgTable(
   })
 );
 
+/**
+ CREATE TABLE "tasks" (
+  id SERIAL PRIMARY KEY NOT NULL,
+  "userId" TEXT NOT NULL,
+  title TEXT,
+  is_completed BOOLEAN DEFAULT FALSE NOT NULL,
+  completed_at TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  FOREIGN KEY ("userId") REFERENCES "user"(id)
+ );
+ */
+
 export type Task = {
   id: number;
+  userId: string;
   title: string | null;
   isCompleted: boolean;
   completedAt: Date | null;
-  orderIndex: Date;
-  orderIndexUpdatedAt: Date;
   updatedAt: Date;
   createdAt: Date;
 };
 
 export const tasks = pgTable("tasks", {
   id: serial("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   title: text("title"),
   isCompleted: boolean("is_completed").default(false).notNull(),
   completedAt: timestamp("completed_at"),
-  orderIndex: timestamp("order_index").defaultNow().notNull(),
-  orderIndexUpdatedAt: timestamp("order_index_updated_at")
-    .defaultNow()
-    .notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
