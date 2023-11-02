@@ -16,10 +16,10 @@ export default function TaskForm({ className }: { className: string }) {
     reset,
   } = useForm<Inputs>();
 
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    createTask(data.title, session.user.id);
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    await createTask(data.title, session.user.id);
     reset();
   };
 
