@@ -12,8 +12,6 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
     error: "/auth/error", // Error code passed in query string as ?error=
-    // verifyRequest: "/auth/verify-request", // (used for check email message)
-    // newUser: "/auth/new-user", // New users will be directed here on first sign in (leave the property out if not of interest)
   },
   providers: [
     GoogleProvider({
@@ -27,13 +25,6 @@ export const authOptions: NextAuthOptions = {
         session.user.id = user.id;
       }
       return session;
-    },
-    async signIn({ user }) {
-      // console.log("user in sign in", user);
-
-      // // TODO query the database for existing user and if they have complete registration
-
-      return true;
     },
   },
 };
