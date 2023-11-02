@@ -19,7 +19,12 @@ export default function TaskForm({ className }: { className: string }) {
   const { data: session } = useSession();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    await createTask(data.title, session.user.id);
+    if (session) {
+      await createTask(data.title, session.user.id);
+    } else {
+      // TODO handle this error
+      console.log('no session')
+    }
     reset();
   };
 
