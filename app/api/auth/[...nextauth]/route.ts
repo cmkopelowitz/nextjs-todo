@@ -1,11 +1,13 @@
 import NextAuth, { NextAuthOptions, SessionOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-// import EmailProvider from "next-auth/providers/email";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/db";
 
 export const authOptions: NextAuthOptions = {
   adapter: DrizzleAdapter(db),
+  session: {
+    strategy: "database",
+  },
   pages: {
     signIn: "/auth/signin",
     signOut: "/auth/signout",
@@ -18,33 +20,21 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
-    // EmailProvider({
-    //   server: {
-    //     host: process.env.EMAIL_SERVER_HOST,
-    //     port: process.env.EMAIL_SERVER_PORT,
-    //     auth: {
-    //       user: process.env.EMAIL_SERVER_USER,
-    //       pass: process.env.EMAIL_SERVER_PASSWORD,
-    //     },
-    //   },
-    //   from: process.env.EMAIL_FROM,
-    // }),
   ],
   callbacks: {
-    jwt: async ({ user, token }) => {
-      if (user) {
-        token.uid = user.id;
+    async session({ session, user }) {
+      if (session?.user) {
+        session.user.id = user.id;
       }
-      return token;
-    },
-    async session({ session, token }) {
-      session.user.id = token.uid;
-
       return session;
     },
-  },
-  session: {
-    strategy: "jwt",
+    async signIn({ user }) {
+      // console.log("user in sign in", user);
+
+      // // TODO query the database for existing user and if they have complete registration
+
+      return true;
+    },
   },
 };
 
