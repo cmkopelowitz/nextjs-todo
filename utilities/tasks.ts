@@ -36,7 +36,27 @@ export async function toggleTaskCompletion(
           updatedAt: new Date(),
         })
         .where(eq(tasks.id, taskId));
-      revalidatePath("/");
+      revalidatePath("/tasks");
+      resolve();
+    } catch (error) {
+      console.log(error);
+      reject();
+    }
+  });
+}
+
+export async function updateTaskTitle(taskId: number, title: string) {
+  return new Promise<void>(async (resolve, reject) => {
+    try {
+      const res = await db
+        .update(tasks)
+        .set({
+          title: title,
+          updatedAt: new Date(),
+        })
+        .where(eq(tasks.id, taskId))
+        .returning({ updatedId: tasks.id, title: tasks.title });
+      revalidatePath("/tasks");
       resolve();
     } catch (error) {
       console.log(error);

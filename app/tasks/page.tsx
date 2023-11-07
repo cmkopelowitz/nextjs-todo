@@ -20,9 +20,8 @@ export default async function Home() {
   const activeTasks = await db
     .select()
     .from(tasks)
-    .where(
-      and(eq(tasks.isCompleted, false), eq(tasks.userId, session.user.id))
-    );
+    .where(and(eq(tasks.isCompleted, false), eq(tasks.userId, session.user.id)))
+    .orderBy(desc(tasks.createdAt));
 
   const completedTasks = await db
     .select()
@@ -36,15 +35,17 @@ export default async function Home() {
         <h1 className="text-3xl font-bold">Tasks</h1>
         <Link href="/api/auth/signout">Sign Out</Link>
       </div>
-      <TaskForm className="absolute bottom-8 sm:static sm:mt-8 inset-x-4" />
+      <TaskForm className="mt-8" />
       <ActiveTasks tasks={activeTasks} />
       {completedTasks.length > 0 && (
-        <ExpandingSection buttonText="Completed" className="mt-6">
+        <ExpandingSection buttonText={"Completed " + completedTasks.length} className="mt-6">
           <div className="grid grid-col-1 gap-2 mt-2">
             {completedTasks?.map((task) => (
               <TaskItem
                 task={task}
                 key={task.id}
+                readOnly
+                disabled
                 onDelete={deleteTask}
                 onToggle={toggleTaskCompletion}
               />

@@ -30,13 +30,16 @@ export default function TaskForm({ className }: { className: string }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className={className}>
-      <input
-        defaultValue=""
-        {...register("title")}
-        id="title"
-        className="border w-full pl-8 py-1"
-        placeholder="Add a Task"
-      />
+      <div className="flex flex-row gap-x-4">
+        <input
+          defaultValue=""
+          {...register("title")}
+          id="title"
+          className="border w-full pl-8 py-1"
+          placeholder="Add a Task"
+        />
+        <button type="submit" className="border p-1">Add</button>
+      </div>
     </form>
   );
 }
