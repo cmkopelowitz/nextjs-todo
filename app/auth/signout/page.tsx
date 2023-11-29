@@ -2,34 +2,36 @@
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardFooter,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function Signout() {
   const router = useRouter();
   return (
     <div className="min-h-screen flex flex-col sm:justify-center items-center">
-      <div className="sm:border flex flex-col p-4 w-full max-w-lg">
-        <Link href="/" className="text-xl">
-          Next Todo
-        </Link>
-        <h1 className="text-2xl font-bold mt-1">Sign Out</h1>
-        <p className="mt-2">Are you sure you want to sign out?</p>
-        <div className="flex flex-col sm:flex-row justify-center mt-4 gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="max-w-max border p-1"
-          >
-            No, go back
-          </button>
-          <button
-            type="button"
-            onClick={() => signOut({ callbackUrl: "/" })}
-            className="max-w-max border p-1"
-          >
-            Yes, sign out
-          </button>
-        </div>
-      </div>
+      <Link href="/" className="text-4xl font-bold">
+        Next To-do
+      </Link>
+      <Card className='mt-5 w-full max-w-sm'>
+        <CardHeader>
+          <CardTitle>Sign Out</CardTitle>
+          <CardDescription>Are you sure you want to sign out?</CardDescription>
+        </CardHeader>
+        <CardFooter className="flex justify-between">
+          <Button type="button" onClick={() => router.back()} variant="outline">
+            Cancel
+          </Button>
+          <Button type="button" onClick={() => signOut({ callbackUrl: "/" })}>
+            Sign out
+          </Button>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
