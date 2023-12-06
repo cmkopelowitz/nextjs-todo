@@ -26,10 +26,10 @@ This project as an experiment to see how a modern app (with features like authen
 
 ## Roadmap
 
-- [ ] ~Validations using Zod
-- [ ] ~Create lists to organize your tasks~
-- [ ] ~Subscriptions using Stripe~
-- [ ] ~Themes and dark mode~
+- [ ] Validations using Zod
+- [ ] Create lists to organize your tasks
+- [ ] Subscriptions using Stripe
+- [ ] Themes and dark mode
 
 
 ## Known Issues
