@@ -39,16 +39,24 @@ A list of things not working right now:
 1. probably at least one thing. Come back later 😊
 
 
-## Getting Started
+## Running Locally
 
-First, run the development server:
+1. Install dependencies using npm:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+```sh
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Copy `.env.example` to `.env.local` and update the variables.
+
+```sh
+cp .env.example .env.local
+```
+
+3. Start the development server:
+
+```sh
+npm run dev
+```
+
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
