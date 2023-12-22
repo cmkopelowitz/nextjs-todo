@@ -68,7 +68,7 @@ const SheetContent = React.forwardRef<
       {...props}
     >
       
-      <SheetPrimitive.Close className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-secondary px-4 pt-2">
+      <SheetPrimitive.Close className="rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none disabled:pointer-events-none data-[state=open]:bg-secondary px-4 pt-2" onClick={() => localStorage.setItem('tasks-ui',JSON.stringify({sidebarVisible: false}))}>
         <Bars3Icon className="w-6" />
 
         <span className="sr-only">Close</span>

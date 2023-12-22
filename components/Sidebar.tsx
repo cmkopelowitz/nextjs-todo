@@ -22,8 +22,8 @@ export const Sidebar: React.FC<{ items: SidebarItem[] }> = ({ items }) => {
   const pathname = usePathname();
   
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Sheet open={JSON.parse(localStorage.getItem('tasks-ui')||'').sidebarVisible} >
+      <SheetTrigger asChild onClick={() => localStorage.setItem('tasks-ui',JSON.stringify({sidebarVisible: true}))}>
         <Button className="bg-white hover:bg-white text-black">
           <Bars3Icon className="w-6" />
         </Button>
