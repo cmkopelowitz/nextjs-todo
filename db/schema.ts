@@ -136,6 +136,7 @@ export const tasks = pgTable("tasks", {
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title"),
   isCompleted: boolean("is_completed").default(false).notNull(),
+  isImportant: boolean("is_important").default(false).notNull(),
   completedAt: timestamp("completed_at"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
