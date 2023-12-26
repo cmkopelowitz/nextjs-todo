@@ -124,6 +124,7 @@ export type Task = {
   userId: string;
   title: string | null;
   isCompleted: boolean;
+  isImportant: boolean;
   completedAt: Date | null;
   updatedAt: Date;
   createdAt: Date;

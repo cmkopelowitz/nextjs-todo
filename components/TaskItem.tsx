@@ -1,88 +1,155 @@
 "use client";
-import { useRef, useEffect, useCallback } from "react";
 import { Task } from "@/db/schema";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
-import { useSession } from "next-auth/react";
-import { updateTaskTitle } from "@/utilities/tasks";
-
-type Inputs = {
-  title: string;
-};
+import { Button } from "@/components/ui/button";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+  ContextMenuSeparator,
+} from "@/components/ui/context-menu";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Circle, CheckCircle2, Star, StarOff, Trash2 } from "lucide-react";
+import {
+  deleteTask,
+  toggleTaskCompletion,
+  toggleTaskImportance,
+} from "@/utilities/tasks";
+import { useState } from "react";
 
 export default function TaskItem({
-  task: { title, id, isCompleted },
-  readOnly,
-  disabled,
-  onDelete,
-  onToggle,
+  task: { title, isCompleted, isImportant, id },
 }: {
   task: Task;
-  readOnly?: boolean;
-  disabled?: boolean;
-  onDelete(taskId: number): void;
-  onToggle(taskId: number, completedStatus: boolean): void;
 }) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const { data: session } = useSession();
-
-  const { control, handleSubmit } = useForm<Inputs>();
-
-  const onSubmit: SubmitHandler<Inputs> = useCallback(
-    async (data) => {
-      if (session) {
-        await updateTaskTitle(id, data.title);
-      } else {
-        // TODO handle this error
-        console.log("no session");
-      }
-    },
-    [id, session]
-  );
-
-  useEffect(() => {
-    const handleKeyPress = (event: KeyboardEvent) => {
-      if (event.key === "Enter") {
-        inputRef.current?.blur();
-        handleSubmit(onSubmit)();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyPress);
-
-    return () => {
-      window.removeEventListener("keydown", handleKeyPress);
-    };
-  }, [onSubmit, handleSubmit]);
-
+  const [open, setOpen] = useState(false);
+  async function deleteTaskHandler() {
+    try {
+      await deleteTask(id);
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
-    <div className="border gap-x-2 w-full py-1 px-3 flex flex-row items-center">
-      <input
-        type="checkbox"
-        checked={isCompleted || false}
-        onChange={() => onToggle(id, !isCompleted)}
-      />
-      <form onSubmit={handleSubmit(onSubmit)} className="flex-grow">
-        <Controller
-          defaultValue={title || ""}
-          name="title"
-          control={control}
-          render={({ field }) => (
-            <input
-              {...field}
-              readOnly={readOnly}
-              disabled={disabled}
-              ref={inputRef}
-              className={`appearance-none w-full ${
-                isCompleted && "line-through"
-              }`}
-              onBlur={handleSubmit(onSubmit)}
-            />
+    <Dialog open={open} onOpenChange={setOpen}>
+      <ContextMenu>
+        <ContextMenuTrigger className="flex gap-x-4 w-full items-center rounded shadow p-4 text-sm">
+          {isCompleted ? (
+            <button
+              title="Mark as not completed"
+              type="button"
+              onClick={() => {
+                toggleTaskCompletion(id, false);
+              }}
+            >
+              <CheckCircle2 size={20} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              title="Mark as completed"
+              onClick={() => {
+                toggleTaskCompletion(id, true);
+              }}
+            >
+              <Circle size={20} />
+            </button>
           )}
-        />
-      </form>
-      <button type="button" onClick={() => onDelete(id)}>
-        X
-      </button>
-    </div>
+          <div className={`w-full ${isCompleted && "line-through"}`}>
+            {title}
+          </div>
+          {isImportant ? (
+            <button
+              type="button"
+              title="Remove importance"
+              onClick={() => {
+                toggleTaskImportance(id, false);
+              }}
+            >
+              <Star fill="yellow" size={20} />
+            </button>
+          ) : (
+            <button
+              type="button"
+              title="Mark as important"
+              onClick={() => {
+                toggleTaskImportance(id, true);
+              }}
+            >
+              <Star size={20} />
+            </button>
+          )}
+        </ContextMenuTrigger>
+        <ContextMenuContent className="w-64">
+          {isImportant ? (
+            <ContextMenuItem onSelect={() => toggleTaskImportance(id, false)}>
+              <StarOff size={20} className="mr-4" />
+              Remove importance
+            </ContextMenuItem>
+          ) : (
+            <ContextMenuItem onSelect={() => toggleTaskImportance(id, true)}>
+              <Star size={20} className="mr-4" />
+              Mark as important
+            </ContextMenuItem>
+          )}
+          {isCompleted ? (
+            <ContextMenuItem onSelect={() => toggleTaskCompletion(id, false)}>
+              <Circle size={20} className="mr-4" />
+              Mark as not complete
+            </ContextMenuItem>
+          ) : (
+            <ContextMenuItem onSelect={() => toggleTaskCompletion(id, true)}>
+              <CheckCircle2 size={20} className="mr-4" />
+              Mark as completed
+            </ContextMenuItem>
+          )}
+          <ContextMenuSeparator />
+          <DialogTrigger asChild>
+            <ContextMenuItem className="text-red-700">
+              <Trash2 size={20} className="mr-4" />
+              Delete task
+            </ContextMenuItem>
+          </DialogTrigger>
+        </ContextMenuContent>
+      </ContextMenu>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you sure absolutely sure?</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. Are you sure you want to delete this
+            task?
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            type="button"
+            onClick={deleteTaskHandler}
+          >
+            Delete task
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -44,10 +44,6 @@ export default async function Home() {
               <TaskItem
                 task={task}
                 key={task.id}
-                readOnly
-                disabled
-                onDelete={deleteTask}
-                onToggle={toggleTaskCompletion}
               />
             ))}
           </div>
