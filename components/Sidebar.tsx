@@ -13,6 +13,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import localStorageHelper from "@/utilities/localStorageHelper"
 import { Bars3Icon } from "@heroicons/react/20/solid"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -22,8 +23,8 @@ export const Sidebar: React.FC<{ items: SidebarItem[] }> = ({ items }) => {
   const pathname = usePathname();
   
   return (
-    <Sheet open={JSON.parse(localStorage.getItem('tasks-ui')||'').sidebarVisible} >
-      <SheetTrigger asChild onClick={() => localStorage.setItem('tasks-ui',JSON.stringify({sidebarVisible: true}))}>
+    <Sheet open={localStorageHelper.getItem('tasks-ui')?.sidebarVisible} >
+      <SheetTrigger asChild onClick={() => localStorageHelper.setItem('tasks-ui',{sidebarVisible: true})}>
         <Button className="bg-white hover:bg-white text-black">
           <Bars3Icon className="w-6" />
         </Button>
