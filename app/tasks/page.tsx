@@ -4,7 +4,6 @@ import TaskItem from "@/components/TaskItem";
 import { tasks } from "@/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "../../db/db";
-import { deleteTask, toggleTaskCompletion } from "@/utilities/tasks";
 import ActiveTasks from "@/components/ActiveTasks";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -38,13 +37,13 @@ export default async function Home() {
       <TaskForm className="mt-8" />
       <ActiveTasks tasks={activeTasks} />
       {completedTasks.length > 0 && (
-        <ExpandingSection buttonText={"Completed " + completedTasks.length} className="mt-6">
+        <ExpandingSection
+          buttonText={"Completed " + completedTasks.length}
+          className="mt-6"
+        >
           <div className="grid grid-col-1 gap-2 mt-2">
             {completedTasks?.map((task) => (
-              <TaskItem
-                task={task}
-                key={task.id}
-              />
+              <TaskItem task={task} key={task.id} />
             ))}
           </div>
         </ExpandingSection>

@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/context-menu";
 import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -25,11 +24,14 @@ import {
   toggleTaskImportance,
 } from "@/utilities/tasks";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function TaskItem({
   task: { title, isCompleted, isImportant, id },
+  highlighted = false,
 }: {
   task: Task;
+  highlighted?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   async function deleteTaskHandler() {
@@ -43,52 +45,65 @@ export default function TaskItem({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <ContextMenu>
-        <ContextMenuTrigger className="flex gap-x-4 w-full items-center rounded shadow p-4 text-sm">
-          {isCompleted ? (
-            <button
-              title="Mark as not completed"
-              type="button"
-              onClick={() => {
-                toggleTaskCompletion(id, false);
-              }}
+        <ContextMenuTrigger>
+          <div
+            className={`flex gap-x-4 w-full items-center rounded shadow p-4 text-sm ${
+              highlighted && "bg-blue-50"
+            }`}
+          >
+            {isCompleted ? (
+              <button
+                title="Mark as not completed"
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTaskCompletion(id, false);
+                }}
+              >
+                <CheckCircle2 size={20} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                title="Mark as completed"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTaskCompletion(id, true);
+                }}
+              >
+                <Circle size={20} />
+              </button>
+            )}
+            <Link
+              href={`/tasks/${id}/details`}
+              className={`w-full ${isCompleted && "line-through"}`}
             >
-              <CheckCircle2 size={20} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              title="Mark as completed"
-              onClick={() => {
-                toggleTaskCompletion(id, true);
-              }}
-            >
-              <Circle size={20} />
-            </button>
-          )}
-          <div className={`w-full ${isCompleted && "line-through"}`}>
-            {title}
+              {title}
+            </Link>
+            {isImportant ? (
+              <button
+                type="button"
+                title="Remove importance"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTaskImportance(id, false);
+                }}
+              >
+                <Star fill="yellow" size={20} />
+              </button>
+            ) : (
+              <button
+                type="button"
+                title="Mark as important"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleTaskImportance(id, true);
+                }}
+              >
+                <Star size={20} />
+              </button>
+            )}
           </div>
-          {isImportant ? (
-            <button
-              type="button"
-              title="Remove importance"
-              onClick={() => {
-                toggleTaskImportance(id, false);
-              }}
-            >
-              <Star fill="yellow" size={20} />
-            </button>
-          ) : (
-            <button
-              type="button"
-              title="Mark as important"
-              onClick={() => {
-                toggleTaskImportance(id, true);
-              }}
-            >
-              <Star size={20} />
-            </button>
-          )}
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
           {isImportant ? (
@@ -122,7 +137,6 @@ export default function TaskItem({
           </DialogTrigger>
         </ContextMenuContent>
       </ContextMenu>
-
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Are you sure absolutely sure?</DialogTitle>
