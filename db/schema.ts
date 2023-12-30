@@ -123,7 +123,9 @@ export type Task = {
   id: number;
   userId: string;
   title: string | null;
+  taskListId: number | null;
   isCompleted: boolean;
+  isImportant: boolean;
   completedAt: Date | null;
   updatedAt: Date;
   createdAt: Date;
@@ -135,8 +137,39 @@ export const tasks = pgTable("tasks", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   title: text("title"),
+  taskListId: integer("task_list_id").references(() => taskLists.id),
   isCompleted: boolean("is_completed").default(false).notNull(),
+  isImportant: boolean("is_important").default(false).notNull(),
   completedAt: timestamp("completed_at"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+/**
+ CREATE TABLE "task_lists" (
+  id SERIAL PRIMARY KEY NOT NULL,
+  "userId" TEXT NOT NULL,
+  title TEXT NOT NULL,
+  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
+  FOREIGN KEY ("userId") REFERENCES "user"(id)
+ );
+ */
+
+export type TaskList = {
+  id: number;
+  userId: string;
+  title: string;
+  updatedAt: Date;
+  createdAt: Date;
+};
+
+export const taskLists = pgTable("task_lists", {
+  id: serial("id").primaryKey(),
+  userId: text("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
