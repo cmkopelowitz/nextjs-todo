@@ -45,6 +45,28 @@ export async function toggleTaskCompletion(
   });
 }
 
+export async function toggleTaskImportance(
+  taskId: number,
+  importanceStatus: boolean
+) {
+  return new Promise<void>(async (resolve, reject) => {
+    try {
+      await db
+        .update(tasks)
+        .set({
+          isImportant: importanceStatus,
+          updatedAt: new Date(),
+        })
+        .where(eq(tasks.id, taskId));
+      revalidatePath("/tasks");
+      resolve();
+    } catch (error) {
+      console.log(error);
+      reject();
+    }
+  });
+}
+
 export async function updateTaskTitle(taskId: number, title: string) {
   return new Promise<void>(async (resolve, reject) => {
     try {
