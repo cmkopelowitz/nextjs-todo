@@ -125,6 +125,7 @@ export type Task = {
   title: string | null;
   taskListId: number | null;
   isCompleted: boolean;
+  isImportant: boolean;
   completedAt: Date | null;
   updatedAt: Date;
   createdAt: Date;

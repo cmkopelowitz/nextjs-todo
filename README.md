@@ -38,8 +38,12 @@ A list of things not working right now:
 
 1. probably at least one thing. Come back later 😊
 
+## Important Notes
+1. We have intentionally downgraded lucide-react to 0.263.1
+
 
 ## Running Locally
+**You must use Node version 20.9.0**
 
 1. Install dependencies using npm:
 
