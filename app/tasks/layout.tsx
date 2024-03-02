@@ -1,9 +1,17 @@
-import { Providers } from "./Providers";
+import NavigationMenu from '@/components/NavigationMenu';
+import { Providers } from './Providers';
 
 export default function RootLayout({
-  children,
+    children
 }: {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }) {
-  return <Providers>{children}</Providers>;
+    return (
+        <Providers>
+            <div className="flex">
+                <NavigationMenu />
+                {children}
+            </div>
+        </Providers>
+    );
 }
