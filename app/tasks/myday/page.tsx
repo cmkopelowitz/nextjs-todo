@@ -10,7 +10,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
 
-export default async function Home() {
+export default async function MyDayTasksPage() {
     const session = await getServerSession(authOptions);
     if (!session) {
         redirect('/');
@@ -35,7 +35,7 @@ export default async function Home() {
     return (
         <main className="min-h-screen container mx-auto py-8 px-4">
             <div className="flex flex-row justify-between">
-                <h1 className="text-3xl font-bold">Tasks</h1>
+                <h1 className="text-3xl font-bold">My Day</h1>
                 <Link href="/api/auth/signout">Sign Out</Link>
             </div>
             <TaskForm className="mt-8" />
