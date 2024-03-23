@@ -1,5 +1,5 @@
-import NavigationMenu from '@/components/NavigationMenu';
-import { Providers } from './Providers';
+import NavigationMenu from "@/components/NavigationMenu";
+import { Providers } from "./Providers";
 
 export default function RootLayout({
     children
