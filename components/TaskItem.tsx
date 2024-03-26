@@ -22,12 +22,12 @@ import {
   deleteTask,
   toggleTaskCompletion,
   toggleTaskImportance,
-} from "@/utilities/tasks";
+} from "@/lib/tasks";
 import { useState } from "react";
 import Link from "next/link";
 
 export default function TaskItem({
-  task: { title, isCompleted, isImportant, id },
+  task: { title, completed, important, id },
   highlighted = false,
 }: {
   task: Task;
@@ -51,13 +51,13 @@ export default function TaskItem({
               highlighted && "bg-blue-50"
             }`}
           >
-            {isCompleted ? (
+            {completed ? (
               <button
                 title="Mark as not completed"
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleTaskCompletion(id, false);
+                  toggleTaskCompletion({ taskId: id, completedStatus: false });
                 }}
               >
                 <CheckCircle2 size={20} />
@@ -68,7 +68,7 @@ export default function TaskItem({
                 title="Mark as completed"
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleTaskCompletion(id, true);
+                  toggleTaskCompletion({ taskId: id, completedStatus: true });
                 }}
               >
                 <Circle size={20} />
@@ -76,17 +76,17 @@ export default function TaskItem({
             )}
             <Link
               href={`/tasks/${id}/details`}
-              className={`w-full ${isCompleted && "line-through"}`}
+              className={`w-full ${completed && "line-through"}`}
             >
               {title}
             </Link>
-            {isImportant ? (
+            {important ? (
               <button
                 type="button"
                 title="Remove importance"
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleTaskImportance(id, false);
+                  toggleTaskImportance({ taskId: id, importanceStatus: false });
                 }}
               >
                 <Star fill="yellow" size={20} />
@@ -97,7 +97,7 @@ export default function TaskItem({
                 title="Mark as important"
                 onClick={(e) => {
                   e.stopPropagation();
-                  toggleTaskImportance(id, true);
+                  toggleTaskImportance({ taskId: id, importanceStatus: true });
                 }}
               >
                 <Star size={20} />
@@ -106,24 +106,40 @@ export default function TaskItem({
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent className="w-64">
-          {isImportant ? (
-            <ContextMenuItem onSelect={() => toggleTaskImportance(id, false)}>
+          {important ? (
+            <ContextMenuItem
+              onSelect={() =>
+                toggleTaskImportance({ taskId: id, importanceStatus: false })
+              }
+            >
               <StarOff size={20} className="mr-4" />
               Remove importance
             </ContextMenuItem>
           ) : (
-            <ContextMenuItem onSelect={() => toggleTaskImportance(id, true)}>
+            <ContextMenuItem
+              onSelect={() =>
+                toggleTaskImportance({ taskId: id, importanceStatus: true })
+              }
+            >
               <Star size={20} className="mr-4" />
               Mark as important
             </ContextMenuItem>
           )}
-          {isCompleted ? (
-            <ContextMenuItem onSelect={() => toggleTaskCompletion(id, false)}>
+          {completed ? (
+            <ContextMenuItem
+              onSelect={() =>
+                toggleTaskCompletion({ taskId: id, completedStatus: false })
+              }
+            >
               <Circle size={20} className="mr-4" />
               Mark as not complete
             </ContextMenuItem>
           ) : (
-            <ContextMenuItem onSelect={() => toggleTaskCompletion(id, true)}>
+            <ContextMenuItem
+              onSelect={() =>
+                toggleTaskCompletion({ taskId: id, completedStatus: true })
+              }
+            >
               <CheckCircle2 size={20} className="mr-4" />
               Mark as completed
             </ContextMenuItem>
