@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { createTask } from "@/utilities/tasks";
+import { createTask } from "@/lib/tasks";
 import { useSession } from "next-auth/react";
 
 type Inputs = {
@@ -20,10 +20,10 @@ export default function TaskForm({ className }: { className: string }) {
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     if (session) {
-      await createTask(data.title, session.user.id);
+      await createTask({ title: data.title, createdBy: session.user.id });
     } else {
       // TODO handle this error
-      console.log('no session')
+      console.log("no session");
     }
     reset();
   };
@@ -38,7 +38,9 @@ export default function TaskForm({ className }: { className: string }) {
           className="border w-full pl-8 py-1"
           placeholder="Add a Task"
         />
-        <button type="submit" className="border p-1">Add</button>
+        <button type="submit" className="border p-1">
+          Add
+        </button>
       </div>
     </form>
   );
