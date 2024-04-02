@@ -40,6 +40,7 @@ export async function toggleTaskCompletion({
       await db
         .update(tasks)
         .set({
+          completed: completedStatus,
           completedAt: completedStatus ? new Date() : null,
           lastModifiedAt: new Date(),
         })
