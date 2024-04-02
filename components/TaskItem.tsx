@@ -1,5 +1,5 @@
 "use client";
-import { Task } from "@/db/schema";
+import { Task } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
   ContextMenu,
