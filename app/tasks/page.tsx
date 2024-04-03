@@ -4,7 +4,6 @@ import TaskItem from "@/components/TaskItem";
 import { tasks } from "@/db/schema";
 import { and, desc, eq } from "drizzle-orm";
 import { db } from "../../db/db";
-import ActiveTasks from "@/components/ActiveTasks";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
@@ -19,13 +18,15 @@ export default async function Home() {
   const activeTasks = await db
     .select()
     .from(tasks)
-    .where(and(eq(tasks.isCompleted, false), eq(tasks.userId, session.user.id)))
+    .where(
+      and(eq(tasks.completed, false), eq(tasks.createdBy, session.user.id))
+    )
     .orderBy(desc(tasks.createdAt));
 
   const completedTasks = await db
     .select()
     .from(tasks)
-    .where(and(eq(tasks.isCompleted, true), eq(tasks.userId, session.user.id)))
+    .where(and(eq(tasks.completed, true), eq(tasks.createdBy, session.user.id)))
     .orderBy(desc(tasks.completedAt));
 
   return (
@@ -35,7 +36,11 @@ export default async function Home() {
         <Link href="/api/auth/signout">Sign Out</Link>
       </div>
       <TaskForm className="mt-8" />
-      <ActiveTasks tasks={activeTasks} />
+      <div className="grid grid-col-1 gap-2 mt-6">
+        {activeTasks?.map((task) => (
+          <TaskItem task={task} key={task.id} />
+        ))}
+      </div>
       {completedTasks.length > 0 && (
         <ExpandingSection
           buttonText={"Completed " + completedTasks.length}
