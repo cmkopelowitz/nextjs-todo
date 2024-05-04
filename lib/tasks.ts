@@ -1,21 +1,21 @@
 "use server";
 import { db } from "@/db/db";
+import { Task } from "@/types";
 import { tasks } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
-export async function createTask({
-  title,
-  createdBy,
-}: {
-  title: string;
-  createdBy: string;
-}) {
+export async function createTask(
+  values: Partial<Task> & {
+    createdBy: string;
+    title: string;
+  }
+) {
   try {
-    await db.insert(tasks).values({ title, createdBy });
+    await db.insert(tasks).values(values);
     revalidatePath("/");
   } catch (error) {
-    console.log(error);
+    throw new Error("Failed to create task.");
   }
 }
 
