@@ -1,14 +1,22 @@
 "use client";
 import React from "react";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { createTask } from "@/utilities/tasks";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { createTask } from "@/lib/tasks";
+import { Task } from "@/types";
 
 type Inputs = {
   title: string;
 };
 
-export default function TaskForm({ className }: { className: string }) {
+export default function TaskForm({
+  className,
+  defaultValues = {},
+}: {
+  className: string;
+  defaultValues?: Partial<Task>;
+}) {
   const {
     register,
     handleSubmit,
@@ -16,16 +24,24 @@ export default function TaskForm({ className }: { className: string }) {
     reset,
   } = useForm<Inputs>();
 
+  const router = useRouter();
   const { data: session } = useSession();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    if (session) {
-      await createTask(data.title, session.user.id);
-    } else {
-      // TODO handle this error
-      console.log('no session')
+    if (!session) {
+      return router.push("/");
     }
-    reset();
+
+    try {
+      await createTask({
+        ...defaultValues,
+        title: data.title,
+        createdBy: session.user.id,
+      });
+      reset();
+    } catch (error) {
+      // TODO handle error
+    }
   };
 
   return (
@@ -38,7 +54,9 @@ export default function TaskForm({ className }: { className: string }) {
           className="border w-full pl-8 py-1"
           placeholder="Add a Task"
         />
-        <button type="submit" className="border p-1">Add</button>
+        <button type="submit" className="border p-1">
+          Add
+        </button>
       </div>
     </form>
   );

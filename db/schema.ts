@@ -1,23 +1,15 @@
 import {
   boolean,
   pgTable,
-  serial,
   integer,
+  date,
   text,
   timestamp,
   primaryKey,
+  uuid,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import type { AdapterAccount } from "@auth/core/adapters";
-
-/**
-  CREATE TABLE "user" (
-    id text PRIMARY KEY NOT NULL,
-    name text,
-    email text NOT NULL,
-    "emailVerified" timestamp,
-    image text
-);
- */
 
 export const users = pgTable("user", {
   id: text("id").notNull().primaryKey(),
@@ -26,24 +18,6 @@ export const users = pgTable("user", {
   emailVerified: timestamp("emailVerified", { mode: "date" }),
   image: text("image"),
 });
-
-/**
- CREATE TABLE account (
-    "userId" text NOT NULL,
-    type text NOT NULL,
-    provider text NOT NULL,
-    "providerAccountId" text NOT NULL,
-    refresh_token text,
-    access_token text,
-    expires_at integer,
-    token_type text,
-    scope text,
-    id_token text,
-    session_state text,
-    FOREIGN KEY ("userId") REFERENCES "user"(id) ON DELETE CASCADE,
-    PRIMARY KEY (provider, "providerAccountId")
-);
- */
 
 export const accounts = pgTable(
   "account",
@@ -67,16 +41,6 @@ export const accounts = pgTable(
   })
 );
 
-/**
- CREATE TABLE "session" (
-    "sessionToken" TEXT NOT NULL,
-    "userId" TEXT NOT NULL,
-    expires TIMESTAMP NOT NULL,
-    FOREIGN KEY ("userId") REFERENCES "user"(id) ON DELETE CASCADE,
-    PRIMARY KEY ("sessionToken")
-);
- */
-
 export const sessions = pgTable("session", {
   sessionToken: text("sessionToken").notNull().primaryKey(),
   userId: text("userId")
@@ -84,15 +48,6 @@ export const sessions = pgTable("session", {
     .references(() => users.id, { onDelete: "cascade" }),
   expires: timestamp("expires", { mode: "date" }).notNull(),
 });
-
-/**
- CREATE TABLE "verificationToken" (
-    identifier TEXT NOT NULL,
-    token TEXT NOT NULL,
-    expires TIMESTAMP NOT NULL,
-    PRIMARY KEY (identifier, token)
- );
- */
 
 export const verificationTokens = pgTable(
   "verificationToken",
@@ -106,70 +61,85 @@ export const verificationTokens = pgTable(
   })
 );
 
-/**
- CREATE TABLE "tasks" (
-  id SERIAL PRIMARY KEY NOT NULL,
-  "userId" TEXT NOT NULL,
-  title TEXT,
-  is_completed BOOLEAN DEFAULT FALSE NOT NULL,
-  completed_at TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  FOREIGN KEY ("userId") REFERENCES "user"(id)
- );
- */
-
-export type Task = {
-  id: number;
-  userId: string;
-  title: string | null;
-  taskListId: number | null;
-  isCompleted: boolean;
-  isImportant: boolean;
-  completedAt: Date | null;
-  updatedAt: Date;
-  createdAt: Date;
-};
-
-export const tasks = pgTable("tasks", {
-  id: serial("id").primaryKey(),
-  userId: text("userId")
+export const tasks = pgTable("task", {
+  id: uuid("id")
+    .default(sql`gen_random_uuid()`)
+    .notNull()
+    .primaryKey(),
+  committedDay: date("committed_day", { mode: "string" }),
+  completed: boolean("completed").default(false).notNull(),
+  completedAt: timestamp("completed_at", { mode: "date" }),
+  createdAt: date("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdBy: text("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  dueDate: date("due_date", { mode: "string" }),
+  important: boolean("important").default(false).notNull(),
+  lastModifiedAt: timestamp("last_modified_at", { mode: "date" })
+    .defaultNow()
+    .notNull(),
+  listId: uuid("list_id").references(() => lists.id),
+  note: text("note"),
+  position: integer("position"),
+  recurrenceDaysOfWeek: text("recurrence_days_of_week").array(),
+  recurrenceInterval: integer("recurrence_interval"),
+  recurrenceType: text("recurrence_type"),
   title: text("title"),
-  taskListId: integer("task_list_id").references(() => taskLists.id),
-  isCompleted: boolean("is_completed").default(false).notNull(),
-  isImportant: boolean("is_important").default(false).notNull(),
-  completedAt: timestamp("completed_at"),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+  todayPosition: integer("today_position"),
 });
 
-/**
- CREATE TABLE "task_lists" (
-  id SERIAL PRIMARY KEY NOT NULL,
-  "userId" TEXT NOT NULL,
-  title TEXT NOT NULL,
-  updated_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW() NOT NULL,
-  FOREIGN KEY ("userId") REFERENCES "user"(id)
- );
- */
-
-export type TaskList = {
-  id: number;
-  userId: string;
-  title: string;
-  updatedAt: Date;
-  createdAt: Date;
-};
-
-export const taskLists = pgTable("task_lists", {
-  id: serial("id").primaryKey(),
-  userId: text("userId")
+export const lists = pgTable("list", {
+  id: uuid("id")
+    .default(sql`gen_random_uuid()`)
+    .notNull()
+    .primaryKey(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdBy: text("created_by")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+  lastModifiedAt: timestamp("last_modified_at", { mode: "date" })
+    .defaultNow()
+    .notNull(),
+  listGroupId: uuid("list_group_id").references(() => listGroups.id, {
+    onDelete: "cascade",
+  }),
+  position: integer("position"),
   title: text("title").notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const listGroups = pgTable("list_group", {
+  id: uuid("id")
+    .notNull()
+    .default(sql`gen_random_uuid()`)
+    .primaryKey(),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdBy: text("created_by")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  lastModifiedAt: timestamp("last_modified_at", { mode: "date" })
+    .defaultNow()
+    .notNull(),
+  position: integer("position"),
+  title: text("title").notNull(),
+});
+
+export const steps = pgTable("step", {
+  id: uuid("id")
+    .default(sql`gen_random_uuid()`)
+    .notNull()
+    .primaryKey(),
+  completed: boolean("completed").default(false).notNull(),
+  completedAt: timestamp("completed_at", { mode: "date" }),
+  createdAt: timestamp("created_at", { mode: "date" }).defaultNow().notNull(),
+  createdBy: text("created_by")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  lastModifiedAt: timestamp("last_modified_at", { mode: "date" })
+    .defaultNow()
+    .notNull(),
+  position: integer("position"),
+  taskId: uuid("task_id")
+    .notNull()
+    .references(() => tasks.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
 });
