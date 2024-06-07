@@ -13,25 +13,29 @@ export default function NavigationPanel() {
   return (
     <div>
       {!show && (
-        <button
-          type="button"
-          className="hidden sm:block ml-6 mt-9"
-          onClick={() => setShow(true)}
-        >
-          <span className="sr-only">Open Navigation</span>
-          <LineHorizontal320Regular />
-        </button>
-      )}
-      {show && (
-        <div className="border h-screen w-80 md:w-96 hidden sm:block">
+        <div className="h-12 px-6 flex items-center">
           <button
             type="button"
-            className="mx-6 mt-9"
-            onClick={() => setShow(false)}
+            className="hidden sm:block"
+            onClick={() => setShow(true)}
           >
+            <span className="sr-only">Open Navigation</span>
             <LineHorizontal320Regular />
-            <span className="sr-only">Close Navigation</span>
           </button>
+        </div>
+      )}
+      {show && (
+        <div className="border h-screen w-[290px] hidden sm:block">
+          <div className="h-12 px-6 flex items-center">
+            <button
+              type="button"
+              className="block"
+              onClick={() => setShow(false)}
+            >
+              <LineHorizontal320Regular />
+              <span className="sr-only">Close Navigation</span>
+            </button>
+          </div>
           <NavigationLink
             label="My Day"
             icon={<WeatherSunny20Regular />}
