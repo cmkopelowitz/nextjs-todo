@@ -19,7 +19,11 @@ export default async function Home() {
     .select()
     .from(tasks)
     .where(
-      and(eq(tasks.completed, false), eq(tasks.createdBy, session.user.id))
+      and(
+        eq(tasks.completed, false),
+        eq(tasks.createdBy, session.user.id),
+        eq(tasks.important, true)
+      )
     )
     .orderBy(desc(tasks.createdAt));
 
@@ -38,7 +42,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen container mx-auto py-8 px-4">
       <div className="flex flex-row justify-between">
-        <h1 className="text-3xl font-bold">Tasks</h1>
+        <h1 className="text-3xl font-bold">Important</h1>
         <Link href="/api/auth/signout">Sign Out</Link>
       </div>
       <TaskForm className="mt-8" defaultValues={{ important: true }} />
