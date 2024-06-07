@@ -9,7 +9,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 
-export default async function Home() {
+export default async function ImportantTasks() {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/");
