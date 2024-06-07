@@ -18,16 +18,19 @@ const NavigationLink: React.FC<NavigationLinkProps> = ({
   const pathname = usePathname();
   const isActive = pathname === path;
   return (
-    <Link
-      className={`flex gap-4 px-6 py-3 ${
-        isActive ? "bg-blue-100 border-l-4 border-blue-500" : ""
-      }`}
-      href={path}
-      aria-current={isActive ? "page" : undefined}
-    >
-      {icon}
-      <div>{label}</div>
-      {resultsCount > 0 && <div className="ml-auto">{resultsCount}</div>}
+    <Link href={path} className="relative">
+      {isActive && (
+        <div className="block absolute left-0 w-0.5 bg-blue-500 top-0 bottom-0 animate-expand" />
+      )}
+      <div
+        className={`flex gap-4 px-6 py-3 ${
+          isActive ? "bg-blue-50" : "hover:bg-gray-100"
+        }`}
+      >
+        {icon}
+        <div className={isActive ? "font-semibold" : ""}>{label}</div>
+        {resultsCount > 0 && <div className="ml-auto">{resultsCount}</div>}
+      </div>
     </Link>
   );
 };
