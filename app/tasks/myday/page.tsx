@@ -8,8 +8,9 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getCurrentDateWithoutTime } from "@/lib/utils";
 
-export default async function Home() {
+export default async function MyDayTasks() {
   const session = await getServerSession(authOptions);
   if (!session) {
     redirect("/");
@@ -19,23 +20,36 @@ export default async function Home() {
     .select()
     .from(tasks)
     .where(
-      and(eq(tasks.completed, false), eq(tasks.createdBy, session.user.id))
+      and(
+        eq(tasks.completed, false),
+        eq(tasks.createdBy, session.user.id),
+        eq(tasks.committedDay, getCurrentDateWithoutTime())
+      )
     )
     .orderBy(desc(tasks.createdAt));
 
   const completedTasks = await db
     .select()
     .from(tasks)
-    .where(and(eq(tasks.completed, true), eq(tasks.createdBy, session.user.id)))
+    .where(
+      and(
+        eq(tasks.completed, true),
+        eq(tasks.createdBy, session.user.id),
+        eq(tasks.committedDay, getCurrentDateWithoutTime())
+      )
+    )
     .orderBy(desc(tasks.completedAt));
 
   return (
     <main className="min-h-screen container mx-auto py-8 px-4">
       <div className="flex flex-row justify-between">
-        <h1 className="text-3xl font-bold">Tasks</h1>
+        <h1 className="text-3xl font-bold">My Day</h1>
         <Link href="/api/auth/signout">Sign Out</Link>
       </div>
-      <TaskForm className="mt-8" />
+      <TaskForm
+        className="mt-8"
+        defaultValues={{ committedDay: getCurrentDateWithoutTime() }}
+      />
       <div className="grid grid-col-1 gap-2 mt-6">
         {activeTasks?.map((task) => (
           <TaskItem task={task} key={task.id} />
