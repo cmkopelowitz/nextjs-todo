@@ -1,4 +1,4 @@
-const { fontFamily } = require("tailwindcss/defaultTheme")
+const { fontFamily } = require("tailwindcss/defaultTheme");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
@@ -7,7 +7,7 @@ module.exports = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    './@/**/*.{ts,tsx}',
+    "./@/**/*.{ts,tsx}",
   ],
   theme: {
     container: {
@@ -70,10 +70,15 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        expand: {
+          "0%": { transform: "scaleY(0)", transformOrigin: "center" },
+          "100%": { transform: "scaleY(1)", transformOrigin: "center" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        expand: "expand 0.25s ease-in-out forwards",
       },
     },
   },

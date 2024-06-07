@@ -3,7 +3,7 @@ import TaskForm from "@/components/TaskForm";
 import TaskItem from "@/components/TaskItem";
 import { tasks } from "@/db/schema";
 import { and, desc, eq } from "drizzle-orm";
-import { db } from "../../db/db";
+import { db } from "../../../db/db";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";

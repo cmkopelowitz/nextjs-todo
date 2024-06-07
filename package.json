@@ -12,6 +12,7 @@
     "@auth/drizzle-adapter": "^0.3.4",
     "@dnd-kit/core": "^6.0.8",
     "@dnd-kit/sortable": "^7.0.2",
+    "@fluentui/react-icons": "^2.0.242",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.0.18",
     "@radix-ui/react-context-menu": "^2.1.5",
